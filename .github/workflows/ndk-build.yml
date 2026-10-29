@@ -1,4 +1,4 @@
-name: Otomatik NDK Build
+name: Google NDK Otomatik İndir ve Build
 
 on:
   push:
@@ -14,9 +14,9 @@ jobs:
       - name: Depoyu Klonla (Checkout)
         uses: actions/checkout@v4
 
-      - name: Android NDK İndir ve Kur
+      - name: Resmi Android NDK İndir ve Kur
         run: |
-          echo "Android NDK r23c indiriliyor..."
+          echo "Google sunucularından Android NDK r23c indiriliyor..."
           wget -q https://dl.google.com/android/repository/android-ndk-r23c-linux.zip
           echo "Arşiv açılıyor..."
           unzip -q android-ndk-r23c-linux.zip
@@ -24,17 +24,20 @@ jobs:
 
       - name: Çalıştırma İzinlerini Ayarla
         run: |
-          chmod +x ./ndk-build
-          find . -name "*.sh" -exec chmod +x {} '+'
+          # Projenizdeki veya NDK'daki gerekli dosyalara yetki veriyoruz
+          chmod +x ./ndk-build || true
+          find . -name "*.sh" -exec chmod +x {} '+' || true
 
       - name: NDK Derlemesini Başlat (ndk-build)
         run: |
-          # NDK yolunu PATH değişkenine ekliyoruz ve ndk-build komutunu çalıştırıyoruz
+          # NDK yolunu PATH değişkenine ekleyip ndk-build komutunu tetikliyoruz
           export PATH=$PATH:$HOME/android-ndk
+          
+          # Projenizin kök dizininde ndk-build'i çalıştırıyoruz
           $HOME/android-ndk/ndk-build
           
       - name: Derlenen Çıktıları Kaydet (Artifacts)
-        uses: actions/upload-artifact@v4
+        uses: upload-artifact@v4
         with:
           name: derlenmis-kutuphaneler
           path: |
