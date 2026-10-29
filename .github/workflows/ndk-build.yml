@@ -24,20 +24,16 @@ jobs:
 
       - name: Çalıştırma İzinlerini Ayarla
         run: |
-          # Projenizdeki veya NDK'daki gerekli dosyalara yetki veriyoruz
           chmod +x ./ndk-build || true
           find . -name "*.sh" -exec chmod +x {} '+' || true
 
       - name: NDK Derlemesini Başlat (ndk-build)
         run: |
-          # NDK yolunu PATH değişkenine ekleyip ndk-build komutunu tetikliyoruz
           export PATH=$PATH:$HOME/android-ndk
-          
-          # Projenizin kök dizininde ndk-build'i çalıştırıyoruz
           $HOME/android-ndk/ndk-build
           
       - name: Derlenen Çıktıları Kaydet (Artifacts)
-        uses: upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: derlenmis-kutuphaneler
           path: |
