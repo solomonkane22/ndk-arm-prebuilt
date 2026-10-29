@@ -30,6 +30,9 @@ jobs:
       - name: NDK Derlemesini Başlat (ndk-build)
         run: |
           export PATH=$PATH:$HOME/android-ndk
+          
+          # Proje yolunuz kök dizindeyse (Eğer jni klasörünüz farklı bir alt klasördeyse 
+          # buradaki komutu projeye göre güncelleyebilirsiniz):
           $HOME/android-ndk/ndk-build
           
       - name: Derlenen Çıktıları Kaydet (Artifacts)
