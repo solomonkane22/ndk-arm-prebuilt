@@ -1,4 +1,4 @@
-name: Google NDK Otomatik İndir ve Build
+name: Otomatik Android.mk Bul ve Build Yap
 
 on:
   push:
@@ -22,17 +22,26 @@ jobs:
           unzip -q android-ndk-r23c-linux.zip
           mv android-ndk-r23c $HOME/android-ndk
 
-      - name: Çalıştırma İzinlerini Ayarla
-        run: |
-          chmod +x ./ndk-build || true
-          find . -name "*.sh" -exec chmod +x {} '+' || true
-
-      - name: NDK Derlemesini Başlat (ndk-build)
+      - name: Android.mk Dosyasını Bul ve Derlemeyi Başlat
         run: |
           export PATH=$PATH:$HOME/android-ndk
           
-          # NDK'ya projenin bu dizinde olduğunu (NDK_PROJECT_PATH=.) bildiriyoruz
-          $HOME/android-ndk/ndk-build NDK_PROJECT_PATH=.
+          # Proje klasöründe Android.mk dosyasını arıyoruz
+          MK_FILE=$(find . -name "Android.mk" | head -n 1)
+          
+          if [ -z "$MK_FILE" ]; then
+            echo "Hata: Projede hiçbir Android.mk dosyası bulunamadı!"
+            exit 1
+          fi
+          
+          echo "Bulunan Android.mk dosyası: $MK_FILE"
+          
+          # Android.mk dosyasının bulunduğu klasörü proje dizini (NDK_PROJECT_PATH) olarak belirliyoruz
+          PROJECT_DIR=$(dirname "$(dirname "$MK_FILE")")
+          
+          # Eğer Android.mk doğrudan kök dizindeyse veya jni içindeyse:
+          echo "Derleme başlatılıyor..."
+          $HOME/android-ndk/ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT="$MK_FILE"
           
       - name: Derlenen Çıktıları Kaydet (Artifacts)
         uses: actions/upload-artifact@v4
